@@ -345,5 +345,6 @@ def get_stocknews_data():
     mycol = mydb["stocknews"]
     mycol.drop()
     mycol = mydb["stocknews"]
-    mycol.insert_many(data)
+    if data:
+        mycol.insert_many(data)
 
