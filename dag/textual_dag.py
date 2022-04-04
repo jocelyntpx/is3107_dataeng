@@ -14,6 +14,8 @@ import stocknews_call
 import reddit_call
 import concat_textual_data
 import sentiment_analysis
+import bigquery_call
+
 
 default_args = {
     'owner': 'adminjw',
@@ -61,9 +63,13 @@ with DAG(
     combine_textual_task = PythonOperator(
         task_id = 'combine_textual_data',
         python_callable = concat_textual_data.combine_textual_db)
+
+    upload_mongodb_data = PythonOperator(
+        task_id = 'upload_mongodb_data_to_bq',
+        python_callable = bigquery_call.Mongo_To_BigQueryTable)
     # [END documentation]
 
 retrieve_reddit_task >> get_sentiment_reddit
 retrieve_stocknews_task >> get_sentiment_stocknews
 get_sentiment_twitter 
-(get_sentiment_reddit, get_sentiment_stocknews, get_sentiment_twitter) >> combine_textual_task
+(get_sentiment_reddit, get_sentiment_stocknews, get_sentiment_twitter) >> combine_textual_task >> upload_mongodb_data
