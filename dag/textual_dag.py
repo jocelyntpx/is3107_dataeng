@@ -23,20 +23,6 @@ default_args = {
     'email_on_retry': False,
     'retries': 1,
     'retry_delay': timedelta(minutes=30),
-    # 'queue': 'bash_queue',
-    # 'pool': 'backfill',
-    # 'priority_weight': 10,
-    # 'end_date': datetime(2016,1,1),
-    # 'wait_for_downstream': False,
-    # 'dag': dag,
-    # 'sla': timedelta(hours=2),
-    # 'execution_timeout': timedelta(seconds=300),
-    # 'execution_timeout': timedelta(seconds=300),
-    # 'on_failure_callback': some_function,
-    # 'on_success_callback': some_other_function,
-    # 'on_retry_callback': another_function,
-    # 'sla_miss_callback': yet_another_function,
-    # 'trigger_rule': 'all_success'
 }
 
 # [START instantiate_dag]
@@ -52,7 +38,7 @@ with DAG(
     dag.doc_md = """
     This is a documentation placed anywhere
     """  # otherwise, type it like this
-    retrieve_stock_news_task = PythonOperator(
+    retrieve_stocknews_task = PythonOperator(
         task_id = 'daily_stock_news',
         python_callable = stocknews_call.get_stocknews_data)
 
@@ -60,18 +46,24 @@ with DAG(
         task_id = 'daily_reddit_threads',
         python_callable = reddit_call.get_reddit_data)
 
-    retrieve_tweet_task = BashOperator(
-        task_id = 'daily_tweets',
-        bash_command = 'python /home/airflow/airflow/scripts/tweetpy_call.py')
+    get_sentiment_twitter = PythonOperator(
+        task_id = 'get_twitter_sentiment_analysis',
+        python_callable = sentiment_analysis.twitter_sentiment)
+
+    get_sentiment_stocknews = PythonOperator(
+        task_id = 'get_stocknews_sentiment_analysis',
+        python_callable = sentiment_analysis.stocknews_sentiment)
+
+    get_sentiment_reddit = PythonOperator(
+        task_id = 'get_reddit_sentiment_analysis',
+        python_callable = sentiment_analysis.reddit_sentiment)
 
     combine_textual_task = PythonOperator(
         task_id = 'combine_textual_data',
         python_callable = concat_textual_data.combine_textual_db)
-
-    get_sentiment_task = PythonOperator(
-        task_id = 'get_sentiment_analysis',
-        python_callable = sentiment_analysis.get_sentiment)
     # [END documentation]
 
-(retrieve_stock_news_task, retrieve_reddit_task) >> combine_textual_task >> get_sentiment_task
-retrieve_tweet_task
+retrieve_reddit_task >> get_sentiment_reddit
+retrieve_stocknews_task >> get_sentiment_stocknews
+get_sentiment_twitter 
+(get_sentiment_reddit, get_sentiment_stocknews, get_sentiment_twitter) >> combine_textual_task

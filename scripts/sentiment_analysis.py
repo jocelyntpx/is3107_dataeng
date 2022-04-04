@@ -4,16 +4,12 @@ import pandas as pd
 import re
 import json
 import numpy as np
+from datetime import datetime, timedelta
 
-def get_sentiment():
-    myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-    mydb = myclient["is3107db"]
-    mydb.list_collection_names()
-
-    # create another collection
-    combined_text_cleaned = mydb["combined_text_cleaned"]
-
-    df = pd.json_normalize(list(mydb.combined_text_data.find()))
+def get_sentiment(table):
+    if table.count_documents({}) == 0:
+        raise ValueError('Database is empty')
+    df = pd.json_normalize(list(table.find()))
 
     def clean(s):
         user = re.compile(r"(?i)@[a-z0-9_]+|#[a-z0-9_]+")
@@ -63,4 +59,48 @@ def get_sentiment():
 
     data = df.to_json(orient='records', lines=True, default_handler=str).split('\n')[:-1]
     data = [json.loads(x) for x in data]
-    combined_text_cleaned.insert_many(data)
+    # combined_text_cleaned.insert_many(data)
+    return data
+
+def stocknews_sentiment():
+    myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+    mydb = myclient["is3107db"]
+    mycol = mydb["stocknews"]
+    data = get_sentiment(mycol)
+    mycol.delete_many({})
+    mycol.insert_many(data)
+
+def twitter_sentiment():
+    myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+    mydb = myclient["is3107db"]
+    mycol = mydb["twitter"]
+
+    df = pd.json_normalize(list(mycol.find()))
+    # Filtering for 1 day's of tweets
+    # df = df[df['datetime_created'] == (datetime.today() - timedelta(days=1)).date()]
+    arr_twitter = df.to_json(orient='records', lines=True, default_handler=str).split('\n')[:-1]
+    arr_twitter = [json.loads(x) for x in arr_twitter]
+
+    twitter_sentiment = mydb["twitter_sentiment"]
+    if twitter_sentiment.count_documents({}) != 0:
+        # If database has previous day's data, clear it
+        twitter_sentiment.delete_many({})
+
+    twitter_sentiment.insert_many(arr_twitter)
+
+    # remove the data that is posted earlier than today
+    mydb.twitter.delete_many(
+        { 'datetime_created': {'$lte': str(datetime.today().date())}}
+    )
+
+    data = get_sentiment(twitter_sentiment)
+    twitter_sentiment.delete_many({})
+    twitter_sentiment.insert_many(data)
+
+def reddit_sentiment():
+    myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+    mydb = myclient["is3107db"]
+    mycol = mydb["reddit"]
+    data = get_sentiment(mycol)
+    mycol.delete_many({})
+    mycol.insert_many(data)
