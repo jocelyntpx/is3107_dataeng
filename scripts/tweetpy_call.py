@@ -123,7 +123,7 @@ class TweetsListener(StreamListener):
                         print(errors)
                     print(to_insert_bq["data"][0])
 
-                if tickers != "":
+                if ticker_list != []:
                     tweet_db.insert_one(tweet_data_filtered["data"][0])
                     print(tweet_data_filtered["data"][0])
             
