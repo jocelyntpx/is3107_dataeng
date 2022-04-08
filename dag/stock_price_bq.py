@@ -17,8 +17,8 @@ from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQue
 
 import sys
 sys.path.append('/home/airflow/airflow/scripts')
-import Postgres_to_gcs
-import Push_to_bq
+import postgres_to_gcs
+import push_to_bq
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/home/airflow/airflow/keys/bq_key.json'
 
@@ -83,7 +83,7 @@ with models.DAG(
 
         postgresToGCS1 = PythonOperator(
             task_id="PostgresToGCS1",
-            python_callable=Postgres_to_gcs.Postgres_To_GCS1,
+            python_callable=postgres_to_gcs.Postgres_To_GCS1,
             op_kwargs = {'TABLE_ARRAY_1':TABLE_ARRAY_1,
                         'GS_PATH':GS_PATH},
         )
@@ -97,7 +97,7 @@ with models.DAG(
         )
         
         push_to_bigquery= PythonOperator(task_id = 'push_to_bigquery', 
-                                 python_callable = Push_to_bq.push_to_bigquery1,
+                                 python_callable = push_to_bq.push_to_bigquery1,
                                  provide_context = True,
                                  op_kwargs = {'TABLE_ARRAY_1':TABLE_ARRAY_1,
                                                 'DATASET_NAME':DATASET_NAME,

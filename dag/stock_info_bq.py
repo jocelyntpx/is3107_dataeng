@@ -52,19 +52,7 @@ dag_id = "stock_info_google_cloud"
 DATASET = DATASET_NAME 
 INSERT_DATE = datetime.now().strftime("%Y-%m-%d")
 
-
 SELECT_DATASET_QUERY = """SELECT * FROM {{ DATASET }}.{{ TABLE }}"""
-
-# def push_to_bigquery():
-#     for table in TABLE_ARRAY:
-#         pg_hook = PostgresHook.get_hook(POSTGRES_CONN_ID)
-#         conn = pg_hook.get_conn()
-#         cursor = conn.cursor()
-#         cursor.execute("select * from " + table)
-#         result = cursor.fetchall()
-
-#     bq_hook = BigQueryHook()
-#     bq_hook.insert_all(project_id=PROJECT_ID, dataset_id=DATASET_NAME, table_id=TABLE_1, rows = result)
 
 
 ############################################
@@ -100,7 +88,7 @@ with models.DAG(
 
         postgresToGCS1 = PythonOperator(
             task_id="PostgresToGCS1",
-            python_callable=Postgres_to_gcs.Postgres_To_GCS1,
+            python_callable=postgres_to_gcs.Postgres_To_GCS1,
             op_kwargs = {'TABLE_ARRAY_1':TABLE_ARRAY_1,
                         'GS_PATH':GS_PATH},
         )
