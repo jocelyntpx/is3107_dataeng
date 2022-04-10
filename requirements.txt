@@ -1,4 +1,5 @@
 tweepy==3.10.0
 praw
+flair
 vanity
 google-cloud-BigQuery
