@@ -6,6 +6,13 @@ from airflow import DAG
 
 from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator
+from airflow.operators.dummy_operator import DummyOperator
+
+from airflow.providers.google.cloud.operators.bigquery import (
+    BigQueryCreateEmptyDatasetOperator,
+    BigQueryCreateEmptyTableOperator
+)
+
 
 import sys
 # from sentiment_analysis import get_sentiment
@@ -27,6 +34,28 @@ default_args = {
     'retry_delay': timedelta(minutes=30),
 }
 
+
+PROJECT_ID = "united-planet-344907"
+DATASET_NAME = "combined_sentiment"
+CONN_ID =  "bq_conn"
+POSTGRES_CONN_ID = "postgres_user"
+TABLE_1 = "combined_sentiment_table"
+LOCATION = "asia-southeast1"
+SCHEMA_1 = [
+        {"name": "_id", "type": "STRING", "mode": "NULLABLE"},
+        {"name": "datetime_created", "type": "DATETIME", "mode": "NULLABLE"},
+        {"name": "source", "type": "STRING", "mode": "NULLABLE"},
+        {"name": "ticker", "type": "STRING", "mode": "REPEATED"},
+        {"name": "publisher", "type": "STRING", "mode": "NULLABLE"},
+        {"name": "text", "type": "STRING", "mode": "NULLABLE"},
+        {"name": "title", "type": "STRING", "mode": "NULLABLE"},
+        {"name": "score", "type": "INTEGER", "mode": "NULLABLE"},
+        {"name": "url", "type": "STRING", "mode": "NULLABLE"},
+        {"name": "probability", "type": "FLOAT", "mode": "NULLABLE"},
+        {"name": "sentiment", "type": "STRING", "mode": "NULLABLE"},
+    ]
+
+
 # [START instantiate_dag]
 with DAG(
     'retrieve_daily_textual_data',
@@ -40,6 +69,25 @@ with DAG(
     dag.doc_md = """
     This is a documentation placed anywhere
     """  # otherwise, type it like this
+
+    create_dataset = BigQueryCreateEmptyDatasetOperator(
+        task_id="create-dataset",
+        dataset_id=DATASET_NAME,
+        location=LOCATION,
+        # bigquery_conn_id=CONN_ID,       # big query connection    bq_conn   
+        # gcp_conn_id=CONN_ID,
+    )
+
+    create_table_1 = BigQueryCreateEmptyTableOperator(
+        task_id="create_table_1",
+        dataset_id=DATASET_NAME,
+        table_id=TABLE_1,
+        schema_fields=SCHEMA_1,
+        location=LOCATION,
+        # bigquery_conn_id=CONN_ID,             
+        # google_cloud_storage_conn_id=CONN_ID,
+    )
+
     retrieve_stocknews_task = PythonOperator(
         task_id = 'daily_stock_news',
         python_callable = stocknews_call.get_stocknews_data)
@@ -64,12 +112,22 @@ with DAG(
         task_id = 'combine_textual_data',
         python_callable = concat_textual_data.combine_textual_db)
 
-    upload_mongodb_data = PythonOperator(
+    upload_mongodb_data_bigquery = PythonOperator(
         task_id = 'upload_mongodb_data_to_bq',
         python_callable = bigquery_call.Mongo_To_BigQueryTable)
+
+    upload_mongodb_data_gcs = PythonOperator(
+        task_id = 'upload_mongodb_data_to_gcs',
+        python_callable = bigquery_call.Mongo_TO_GCS) 
+
+    finish_pipeline = DummyOperator(
+    task_id = 'finish_pipeline')   
     # [END documentation]
 
+
+
+create_dataset >> create_table_1 >> (retrieve_reddit_task, retrieve_stocknews_task, get_sentiment_twitter) 
 retrieve_reddit_task >> get_sentiment_reddit
 retrieve_stocknews_task >> get_sentiment_stocknews
 get_sentiment_twitter 
-(get_sentiment_reddit, get_sentiment_stocknews, get_sentiment_twitter) >> combine_textual_task >> upload_mongodb_data
+(get_sentiment_reddit, get_sentiment_stocknews, get_sentiment_twitter) >> combine_textual_task >> (upload_mongodb_data_bigquery, upload_mongodb_data_gcs) >> finish_pipeline
