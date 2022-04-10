@@ -2,3 +2,9 @@ tweepy==3.10.0
 praw
 vanity
 google-cloud-BigQuery
+apache-airflow==2.2.3
+apache-airflow-providers-ftp==2.0.1
+apache-airflow-providers-google==6.7.0
+apache-airflow-providers-postgres==4.0.1
+yahoo-fin==0.8.9.1
+yfinance==0.1.70
