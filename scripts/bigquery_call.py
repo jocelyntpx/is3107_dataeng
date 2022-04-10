@@ -4,7 +4,7 @@ from airflow.providers.google.cloud.hooks.bigquery import BigQueryHook
 from airflow.contrib.hooks.gcs_hook import GoogleCloudStorageHook
 import pymongo
 from bson.json_util import dumps, loads
-from datetime import datetime
+from datetime import datetime, timedelta
 from google.cloud import bigquery
 
 import os
@@ -23,7 +23,12 @@ GS_PATH = 'data/textual_data/'
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 mydb = myclient["is3107db"]
 mycol = mydb["combined_sentiment_data"]
-collection = mycol.find()
+collection = mycol.find(
+                {'datetime_created': {
+                    '$gte': str((datetime.today()-timedelta(days=1)).date()),
+                    '$lt': str(datetime.today().date())
+                    }
+                })
 list_cur = list(collection)
 
 def Mongo_TO_GCS():
