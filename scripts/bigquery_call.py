@@ -23,6 +23,8 @@ GS_PATH = 'data/textual_data/'
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 mydb = myclient["is3107db"]
 mycol = mydb["combined_sentiment_data"]
+
+# double check that we are retrieving one day's worth of data.
 collection = mycol.find(
                 {'datetime_created': {
                     '$gte': str((datetime.today()-timedelta(days=1)).date()),
@@ -60,9 +62,3 @@ def Mongo_To_BigQueryTable():
 
         # TODO: only add in yesterday's informaiton, not all (appending method)
         bq_hook.insert_all(project_id=projectId, dataset_id=datasetId, table_id=tableId, rows = list_cur)
-
-
-
-
-
-
