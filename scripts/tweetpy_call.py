@@ -29,6 +29,29 @@ Subject: Twitter stream disconnected
 
 Twitter stream has disconnected. Please reconnect."""
 
+tickers_dict={
+    'singapore airlines': 'Singapore Airlines Limited',
+    'dbs': 'DBS Group Holdings Ltd',
+    'comfortdelgro': 'ComfortDelGro Corporation Limited',
+    'genting': 'Genting Singapore Limited',
+    'capitaland': 'CapitaLand Integrated Commercial Trust',
+    'uob': 'United Overseas Bank Limited',
+    'mapletree logistics': 'Mapletree Logistics Trust',
+    'mapletree commercial': 'Mapletree Commercial Trust',
+    'sats': 'SATS Ltd',
+    'wilmar': 'Wilmar International Limited',
+    'singtel': 'Singapore Telecommunications Limited',
+    'city dev': 'City Developments Limited',
+    'yangzijiang shipbuilding': 'Yangzijiang Shipbuilding (Holdings) Ltd',
+    'thai beverage public company': 'Thai Beverage Public Company Limited',
+    'venture corporation': 'Venture Corporation Limited',
+    'sembcorp': 'Sembcorp Industries Ltd',
+    'ascendas': 'Ascendas Real Estate Investment Trust',
+    'frasers': 'Frasers Logistics & Commercial Trust',
+    'hongkong land holdings': 'Hongkong Land Holdings Limited',
+    'st engineering': 'Singapore Technologies Engineering Ltd'
+}
+
 class TweetsListener(StreamListener):
     def __init__(self, *args, **kwargs):
         self.bq_table=kwargs['table']
@@ -38,28 +61,6 @@ class TweetsListener(StreamListener):
         
     
     def on_data(self, data):
-        tickers_dict={
-            'singapore airlines': 'Singapore Airlines Limited',
-            'dbs': 'DBS Group Holdings Ltd',
-            'comfortdelgro': 'ComfortDelGro Corporation Limited',
-            'genting': 'Genting Singapore Limited',
-            'capitaland': 'CapitaLand Integrated Commercial Trust',
-            'uob': 'United Overseas Bank Limited',
-            'mapletree logistics': 'Mapletree Logistics Trust',
-            'mapletree commercial': 'Mapletree Commercial Trust',
-            'sats': 'SATS Ltd',
-            'wilmar': 'Wilmar International Limited',
-            'singtel': 'Singapore Telecommunications Limited',
-            'city dev': 'City Developments Limited',
-            'yangzijiang shipbuilding': 'Yangzijiang Shipbuilding (Holdings) Ltd',
-            'thai beverage public company': 'Thai Beverage Public Company Limited',
-            'venture corporation': 'Venture Corporation Limited',
-            'sembcorp': 'Sembcorp Industries Ltd',
-            'ascendas': 'Ascendas Real Estate Investment Trust',
-            'frasers': 'Frasers Logistics & Commercial Trust',
-            'hongkong land holdings': 'Hongkong Land Holdings Limited',
-            'st engineering': 'Singapore Technologies Engineering Ltd'
-        }
         #####################################
         if self.count >= 5: 
             sys.exit("Reached 5 tweets") #as Twitter is streaming, our group will use a counter to stop it to manage the data.
@@ -200,9 +201,7 @@ auth.set_access_token(access_token, access_secret)
  
 twitter_stream = Stream(auth, TweetsListener(table=table))
 twitter_stream.filter(
-    track=['Singapore Airlines', 'DBS', 'ComfortDelGro', 'Genting', 'Capitaland', 'UOB', 'Mapletree Logistics', 'Mapletree Commercial', 'SATS', 'Wilmar', 
-        'Singtel', 'City Dev', 'Yangzijiang Shipbuilding', 'Thai Beverage Public Company', 'Venture Corporation', 'Sembcorp', 'Ascendas', 'Frasers',
-        'Hongkong Land Holdings', 'ST Engineering'],
+    track=list(tickers_dict.values()),
     # follow=['1507756052405653511'], #test account
     follow=['282161299','66793353','38400130','56883209','41085467','77165249','95310018','34568673','85774665','37874853','115624161','29213315','2362057826'],
     languages=['en']

@@ -14,26 +14,26 @@ CLIENT_ID = 'CSwmabTf7mzgHTmg2zynPg'
 SECRET_TOKEN = '9VSTmChi6sqT5JCct1ha8Y3ctxKeVg'
 
 tickers_dict={
-        'singapore airlines': 'Singapore Airlines Limited',
-        'dbs': 'DBS Group Holdings Ltd',
-        'comfortdelgro': 'ComfortDelGro Corporation Limited',
-        'genting': 'Genting Singapore Limited',
-        'capitaland': 'CapitaLand Integrated Commercial Trust',
-        'uob': 'United Overseas Bank Limited',
-        'mapletree logistics': 'Mapletree Logistics Trust',
-        'mapletree commercial': 'Mapletree Commercial Trust',
-        'sats': 'SATS Ltd',
-        'wilmar': 'Wilmar International Limited',
-        'singtel': 'Singapore Telecommunications Limited',
-        'city dev': 'City Developments Limited',
-        'yangzijiang shipbuilding': 'Yangzijiang Shipbuilding (Holdings) Ltd',
-        'thai beverage public company': 'Thai Beverage Public Company Limited',
-        'venture corporation': 'Venture Corporation Limited',
-        'sembcorp': 'Sembcorp Industries Ltd',
-        'ascendas': 'Ascendas Real Estate Investment Trust',
-        'frasers': 'Frasers Logistics & Commercial Trust',
-        'hongkong land holdings': 'Hongkong Land Holdings Limited',
-        'st engineering': 'Singapore Technologies Engineering Ltd'
+    'singapore airlines': 'Singapore Airlines Limited',
+    'dbs': 'DBS Group Holdings Ltd',
+    'comfortdelgro': 'ComfortDelGro Corporation Limited',
+    'genting': 'Genting Singapore Limited',
+    'capitaland': 'CapitaLand Integrated Commercial Trust',
+    'uob': 'United Overseas Bank Limited',
+    'mapletree logistics': 'Mapletree Logistics Trust',
+    'mapletree commercial': 'Mapletree Commercial Trust',
+    'sats': 'SATS Ltd',
+    'wilmar': 'Wilmar International Limited',
+    'singtel': 'Singapore Telecommunications Limited',
+    'city dev': 'City Developments Limited',
+    'yangzijiang shipbuilding': 'Yangzijiang Shipbuilding (Holdings) Ltd',
+    'thai beverage public company': 'Thai Beverage Public Company Limited',
+    'venture corporation': 'Venture Corporation Limited',
+    'sembcorp': 'Sembcorp Industries Ltd',
+    'ascendas': 'Ascendas Real Estate Investment Trust',
+    'frasers': 'Frasers Logistics & Commercial Trust',
+    'hongkong land holdings': 'Hongkong Land Holdings Limited',
+    'st engineering': 'Singapore Technologies Engineering Ltd'
 }
 
 def get_reddit_data():
