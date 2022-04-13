@@ -823,7 +823,7 @@ def get_stocknews_data():
     data = [json.loads(x) for x in data]
 
     myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-    mydb = myclient["is3107db"]
+    mydb = myclient["textual_db"]
     mycol = mydb["stocknews"]
 
     if mycol.count_documents({}) != 0:

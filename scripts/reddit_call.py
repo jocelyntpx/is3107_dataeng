@@ -984,7 +984,7 @@ def get_reddit_data():
 
     #DB
     myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-    mydb = myclient["is3107db"]
+    mydb = myclient["textual_db"]
     mycol = mydb["reddit"]
     if mycol.count_documents({}) != 0:
             # If database contains other day's data, clear it

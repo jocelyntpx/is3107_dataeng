@@ -11,8 +11,8 @@ import os
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/home/airflow/airflow/keys/bq_key.json'
 
 projectId ='united-planet-344907'
-datasetId = 'combined_sentiment'
-tableId ='combined_sentiment_table'
+datasetId = 'sentiment'
+tableId ='combined_sentiment'
 
 GOOGLE_CONN_ID = "google_cloud_default"    
 INSERT_DATE = datetime.now().strftime("%Y-%m-%d")
@@ -21,7 +21,7 @@ GS_PATH = 'data/textual_data/'
 
 
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-mydb = myclient["is3107db"]
+mydb = myclient["textual_db"]
 mycol = mydb["combined_sentiment_data"]
 
 # double check that we are retrieving one day's worth of data.
@@ -48,17 +48,13 @@ def Mongo_TO_GCS():
 def Mongo_To_BigQueryTable():
     bq_hook = BigQueryHook()
 
-    # check if yesterday's data has been inputteds
+    # delete any rows from BQ with yesterday's data
     query = """
-        SELECT *
-        FROM `united-planet-344907.combined_test_cleaned.combined_test_cleaned_table` AS t 
-        WHERE t.datetime_created BETWEEN DATE_SUB(CURRENT_DATE('''GMT'''), INTERVAL 1 DAY) AND current_date('''GMT''');
+        DELETE FROM `united-planet-344907.sentiment.combined_sentiment` AS t
+        WHERE t.datetime_created BETWEEN DATE_SUB(CURRENT_DATE('''GMT'''), INTERVAL 1 DAY) AND current_date('''GMT''')
+        AND t.datetime_created < TIMESTAMP_SUB(t.datetime_created, INTERVAL 30 MINUTE);
     """
     bq_client = bigquery.Client(project = bq_hook._get_field(projectId), credentials = bq_hook._get_credentials())
     data = bq_client.query(query).result()
-
-    # if yesterday's data isn't found, add inside bigquery
-    if data.total_rows == 0:
-
-        # TODO: only add in yesterday's informaiton, not all (appending method)
-        bq_hook.insert_all(project_id=projectId, dataset_id=datasetId, table_id=tableId, rows = list_cur)
+    print(data)
+    bq_hook.insert_all(project_id=projectId, dataset_id=datasetId, table_id=tableId, rows = list_cur)

@@ -2,7 +2,7 @@ import pymongo
 
 def combine_textual_db():
     myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-    mydb = myclient["is3107db"]
+    mydb = myclient["textual_db"]
 
     combined_text_data = mydb["combined_sentiment_data"]
 

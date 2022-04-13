@@ -36,10 +36,10 @@ default_args = {
 
 
 PROJECT_ID = "united-planet-344907"
-DATASET_NAME = "combined_sentiment"
+DATASET_NAME = "sentiment"
 CONN_ID =  "bq_conn"
 POSTGRES_CONN_ID = "postgres_user"
-TABLE_1 = "combined_sentiment_table"
+TABLE_1 = "combined_sentiment"
 LOCATION = "asia-southeast1"
 SCHEMA_1 = [
         {"name": "_id", "type": "STRING", "mode": "NULLABLE"},
@@ -73,20 +73,14 @@ with DAG(
     create_dataset = BigQueryCreateEmptyDatasetOperator(
         task_id="create-dataset",
         dataset_id=DATASET_NAME,
-        location=LOCATION,
-        # bigquery_conn_id=CONN_ID,       # big query connection    bq_conn   
-        # gcp_conn_id=CONN_ID,
-    )
+        location=LOCATION)
 
-    create_table_1 = BigQueryCreateEmptyTableOperator(
-        task_id="create_table_1",
+    create_table = BigQueryCreateEmptyTableOperator(
+        task_id="create_table",
         dataset_id=DATASET_NAME,
         table_id=TABLE_1,
         schema_fields=SCHEMA_1,
-        location=LOCATION,
-        # bigquery_conn_id=CONN_ID,             
-        # google_cloud_storage_conn_id=CONN_ID,
-    )
+        location=LOCATION)
 
     retrieve_stocknews_task = PythonOperator(
         task_id = 'daily_stock_news',
@@ -126,7 +120,7 @@ with DAG(
 
 
 
-create_dataset >> create_table_1 >> (retrieve_reddit_task, retrieve_stocknews_task, get_sentiment_twitter) 
+create_dataset >> create_table >> (retrieve_reddit_task, retrieve_stocknews_task, get_sentiment_twitter) 
 retrieve_reddit_task >> get_sentiment_reddit
 retrieve_stocknews_task >> get_sentiment_stocknews
 get_sentiment_twitter 

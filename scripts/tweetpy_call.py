@@ -146,7 +146,7 @@ class TweetsListener(StreamListener):
 
 
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-mydb = myclient["is3107db"]
+mydb = myclient["textual_db"]
 tweet_db = mydb["twitter"]
 
 # big query
