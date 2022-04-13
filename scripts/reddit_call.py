@@ -3,37 +3,51 @@ from airflow.operators.python_operator import PythonOperator
 
 from datetime import datetime, timedelta  
 import datetime as dt
-import pandas as pd
-import requests
 from dateutil import tz
 import praw
 import pymongo
-
 import time
-
 
 USERNAME = 'Still_Statistician32'
 PASSticker = 'BD99cjOO'
 CLIENT_ID = 'CSwmabTf7mzgHTmg2zynPg'
 SECRET_TOKEN = '9VSTmChi6sqT5JCct1ha8Y3ctxKeVg'
 
-track=['Singapore Airlines', 'DBS', 'ComfortDelGro', 'Genting', 'Capitaland', 'UOB', 'Mapletree Logistics', 'Mapletree Commercial', 'SATS', 'Wilmar', 
-        'Singtel', 'City Dev', 'Yangzijiang Shipbuilding', 'Thai Beverage Public Company', 'Venture Corporation', 'Sembcorp', 'Ascendas', 'Frasers',
-        'Hongkong Land Holdings', 'ST Engineering']
+tickers_dict={
+        'singapore airlines': 'Singapore Airlines Limited',
+        'dbs': 'DBS Group Holdings Ltd',
+        'comfortdelgro': 'ComfortDelGro Corporation Limited',
+        'genting': 'Genting Singapore Limited',
+        'capitaland': 'CapitaLand Integrated Commercial Trust',
+        'uob': 'United Overseas Bank Limited',
+        'mapletree logistics': 'Mapletree Logistics Trust',
+        'mapletree commercial': 'Mapletree Commercial Trust',
+        'sats': 'SATS Ltd',
+        'wilmar': 'Wilmar International Limited',
+        'singtel': 'Singapore Telecommunications Limited',
+        'city dev': 'City Developments Limited',
+        'yangzijiang shipbuilding': 'Yangzijiang Shipbuilding (Holdings) Ltd',
+        'thai beverage public company': 'Thai Beverage Public Company Limited',
+        'venture corporation': 'Venture Corporation Limited',
+        'sembcorp': 'Sembcorp Industries Ltd',
+        'ascendas': 'Ascendas Real Estate Investment Trust',
+        'frasers': 'Frasers Logistics & Commercial Trust',
+        'hongkong land holdings': 'Hongkong Land Holdings Limited',
+        'st engineering': 'Singapore Technologies Engineering Ltd'
+}
 
 
 def get_reddit_data():
-    '''
     reddit = praw.Reddit(client_id=CLIENT_ID, 
                      client_secret=SECRET_TOKEN,
                      passticker=PASSticker, 
                      user_agent='TESTING praw accessAPI:v0.0.1 (by /u/Still_Statistician32)',
                      username=USERNAME)
-    subreddit = reddit.subreddit('sgxbets')
+    subreddit = reddit.subreddit('singapore')
     sgx_list = []
-    sgx_subreddit = iter('')
+    # sgx_subreddit = iter('')
     start = time.time()
-    for word in track: 
+    for word in tickers_dict.keys():
         sgx_subreddit = subreddit.search(word)
         from_zone = tz.gettz('UTC')
         to_zone = tz.gettz('Singapore')
@@ -45,52 +59,14 @@ def get_reddit_data():
             utc = utc.replace(tzinfo=from_zone)
             local = utc.astimezone(to_zone)
             local_dt = local.strftime('%Y-%m-%d %H:%M:%S')
+            
             if (local_dt == (datetime.today() - timedelta(days=1)).date()):
                 sgx_dict['datetime_created'] = local_dt
                 sgx_dict['source'] = 'Reddit'
                 ticker_list = []
-                for ticker in track:
-                    if (ticker in posts.selftext) or (ticker in posts.title) : 
-                        if ("singapore airlines" in (full_tweet.lower())):
-                            ticker_list.append("Singapore Airlines Limited")
-                        if ("dbs" in (full_tweet.lower())):
-                            ticker_list.append("DBS Group Holdings Ltd")
-                        if ("comfortdelgro" in (full_tweet.lower())):
-                            ticker_list.append("ComfortDelGro Corporation Limited")
-                        if ("genting" in (full_tweet.lower())):
-                            ticker_list.append("Genting Singapore Limited")
-                        if ("capitaland" in (full_tweet.lower())):
-                            ticker_list.append("CapitaLand Integrated Commercial Trust")
-                        if ("uob" in (full_tweet.lower())):
-                            ticker_list.append("United Overseas Bank Limited")
-                        if ("mapletree logistics" in (full_tweet.lower())):
-                            ticker_list.append("Mapletree Logistics Trust")
-                        if ("mapletree commercial" in (full_tweet.lower())):
-                            ticker_list.append("Mapletree Commercial Trust")
-                        if ("sats" in (full_tweet.lower())):
-                            ticker_list.append("SATS Ltd")
-                        if ("wilmar" in (full_tweet.lower())):
-                            ticker_list.append("Wilmar International Limited")
-                        if ("singtel" in (full_tweet.lower())):
-                            ticker_list.append("Singapore Telecommunications Limited")
-                        if ("city dev" in (full_tweet.lower())):
-                            ticker_list.append("City Developments Limited")
-                        if ("yangzijiang shipbuilding" in (full_tweet.lower())):
-                            ticker_list.append("Yangzijiang Shipbuilding (Holdings) Ltd")
-                        if ("thai beverage public company" in (full_tweet.lower())):
-                            ticker_list.append("Thai Beverage Public Company Limited")
-                        if ("venture corporation" in (full_tweet.lower())):
-                            ticker_list.append("Venture Corporation Limited")
-                        if ("sembcorp" in (full_tweet.lower())):
-                            ticker_list.append("Sembcorp Industries Ltd")
-                        if ("ascendas" in (full_tweet.lower())):
-                            ticker_list.append("Ascendas Real Estate Investment Trust")
-                        if ("frasers" in (full_tweet.lower())):
-                            ticker_list.append("Frasers Logistics & Commercial Trust")
-                        if ("hongkong land holdings" in (full_tweet.lower())):
-                            ticker_list.append("Hongkong Land Holdings Limited")
-                        if ("st engineering" in (full_tweet.lower())):
-                            ticker_list.append("Singapore Technologies Engineering Ltd")
+                for ticker, name in tickers_dict.items():
+                    if (ticker in posts.selftext.lower()) or (ticker in posts.title.lower()):
+                        ticker_list.append(name)
                 sgx_dict['ticker'] = ticker_list
                 sgx_dict['publisher'] = str(posts.author)
                 sgx_dict['text'] = posts.selftext
@@ -101,7 +77,6 @@ def get_reddit_data():
     end = time.time()
     print('Time execution duration (secs): ', end-start)
     print(sgx_list)
-    '''
 
     sgx_list = [
     {

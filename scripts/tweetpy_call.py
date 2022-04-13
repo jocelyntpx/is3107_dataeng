@@ -38,6 +38,28 @@ class TweetsListener(StreamListener):
         
     
     def on_data(self, data):
+        tickers_dict={
+            'singapore airlines': 'Singapore Airlines Limited',
+            'dbs': 'DBS Group Holdings Ltd',
+            'comfortdelgro': 'ComfortDelGro Corporation Limited',
+            'genting': 'Genting Singapore Limited',
+            'capitaland': 'CapitaLand Integrated Commercial Trust',
+            'uob': 'United Overseas Bank Limited',
+            'mapletree logistics': 'Mapletree Logistics Trust',
+            'mapletree commercial': 'Mapletree Commercial Trust',
+            'sats': 'SATS Ltd',
+            'wilmar': 'Wilmar International Limited',
+            'singtel': 'Singapore Telecommunications Limited',
+            'city dev': 'City Developments Limited',
+            'yangzijiang shipbuilding': 'Yangzijiang Shipbuilding (Holdings) Ltd',
+            'thai beverage public company': 'Thai Beverage Public Company Limited',
+            'venture corporation': 'Venture Corporation Limited',
+            'sembcorp': 'Sembcorp Industries Ltd',
+            'ascendas': 'Ascendas Real Estate Investment Trust',
+            'frasers': 'Frasers Logistics & Commercial Trust',
+            'hongkong land holdings': 'Hongkong Land Holdings Limited',
+            'st engineering': 'Singapore Technologies Engineering Ltd'
+        }
         #####################################
         if self.count >= 5: 
             sys.exit("Reached 5 tweets") #as Twitter is streaming, our group will use a counter to stop it to manage the data.
@@ -54,47 +76,50 @@ class TweetsListener(StreamListener):
                 except Exception as e:
                     full_tweet = tweet_data['text']
             
-                ticker_list = []   #to edit
-                if ("singapore airlines" in (full_tweet.lower())):
-                    ticker_list.append("Singapore Airlines Limited")
-                if ("dbs" in (full_tweet.lower())):
-                    ticker_list.append("DBS Group Holdings Ltd")
-                if ("comfortdelgro" in (full_tweet.lower())):
-                    ticker_list.append("ComfortDelGro Corporation Limited")
-                if ("genting" in (full_tweet.lower())):
-                    ticker_list.append("Genting Singapore Limited")
-                if ("capitaland" in (full_tweet.lower())):
-                    ticker_list.append("CapitaLand Integrated Commercial Trust")
-                if ("uob" in (full_tweet.lower())):
-                    ticker_list.append("United Overseas Bank Limited")
-                if ("mapletree logistics" in (full_tweet.lower())):
-                    ticker_list.append("Mapletree Logistics Trust")
-                if ("mapletree commercial" in (full_tweet.lower())):
-                    ticker_list.append("Mapletree Commercial Trust")
-                if ("sats" in (full_tweet.lower())):
-                    ticker_list.append("SATS Ltd")
-                if ("wilmar" in (full_tweet.lower())):
-                    ticker_list.append("Wilmar International Limited")
-                if ("singtel" in (full_tweet.lower())):
-                    ticker_list.append("Singapore Telecommunications Limited")
-                if ("city dev" in (full_tweet.lower())):
-                    ticker_list.append("City Developments Limited")
-                if ("yangzijiang shipbuilding" in (full_tweet.lower())):
-                    ticker_list.append("Yangzijiang Shipbuilding (Holdings) Ltd")
-                if ("thai beverage public company" in (full_tweet.lower())):
-                    ticker_list.append("Thai Beverage Public Company Limited")
-                if ("venture corporation" in (full_tweet.lower())):
-                    ticker_list.append("Venture Corporation Limited")
-                if ("sembcorp" in (full_tweet.lower())):
-                    ticker_list.append("Sembcorp Industries Ltd")
-                if ("ascendas" in (full_tweet.lower())):
-                    ticker_list.append("Ascendas Real Estate Investment Trust")
-                if ("frasers" in (full_tweet.lower())):
-                    ticker_list.append("Frasers Logistics & Commercial Trust")
-                if ("hongkong land holdings" in (full_tweet.lower())):
-                    ticker_list.append("Hongkong Land Holdings Limited")
-                if ("st engineering" in (full_tweet.lower())):
-                    ticker_list.append("Singapore Technologies Engineering Ltd")
+                ticker_list = []
+                for ticker, name in tickers_dict.items():
+                    if ticker in full_tweet.lower():
+                        ticker_list.append(name)
+                # if ("singapore airlines" in (full_tweet.lower())):
+                #     ticker_list.append("Singapore Airlines Limited")
+                # if ("dbs" in (full_tweet.lower())):
+                #     ticker_list.append("DBS Group Holdings Ltd")
+                # if ("comfortdelgro" in (full_tweet.lower())):
+                #     ticker_list.append("ComfortDelGro Corporation Limited")
+                # if ("genting" in (full_tweet.lower())):
+                #     ticker_list.append("Genting Singapore Limited")
+                # if ("capitaland" in (full_tweet.lower())):
+                #     ticker_list.append("CapitaLand Integrated Commercial Trust")
+                # if ("uob" in (full_tweet.lower())):
+                #     ticker_list.append("United Overseas Bank Limited")
+                # if ("mapletree logistics" in (full_tweet.lower())):
+                #     ticker_list.append("Mapletree Logistics Trust")
+                # if ("mapletree commercial" in (full_tweet.lower())):
+                #     ticker_list.append("Mapletree Commercial Trust")
+                # if ("sats" in (full_tweet.lower())):
+                #     ticker_list.append("SATS Ltd")
+                # if ("wilmar" in (full_tweet.lower())):
+                #     ticker_list.append("Wilmar International Limited")
+                # if ("singtel" in (full_tweet.lower())):
+                #     ticker_list.append("Singapore Telecommunications Limited")
+                # if ("city dev" in (full_tweet.lower())):
+                #     ticker_list.append("City Developments Limited")
+                # if ("yangzijiang shipbuilding" in (full_tweet.lower())):
+                #     ticker_list.append("Yangzijiang Shipbuilding (Holdings) Ltd")
+                # if ("thai beverage public company" in (full_tweet.lower())):
+                #     ticker_list.append("Thai Beverage Public Company Limited")
+                # if ("venture corporation" in (full_tweet.lower())):
+                #     ticker_list.append("Venture Corporation Limited")
+                # if ("sembcorp" in (full_tweet.lower())):
+                #     ticker_list.append("Sembcorp Industries Ltd")
+                # if ("ascendas" in (full_tweet.lower())):
+                #     ticker_list.append("Ascendas Real Estate Investment Trust")
+                # if ("frasers" in (full_tweet.lower())):
+                #     ticker_list.append("Frasers Logistics & Commercial Trust")
+                # if ("hongkong land holdings" in (full_tweet.lower())):
+                #     ticker_list.append("Hongkong Land Holdings Limited")
+                # if ("st engineering" in (full_tweet.lower())):
+                #     ticker_list.append("Singapore Technologies Engineering Ltd")
                 
                 # convert UTC to GMT+8
                 dtime = tweet_data['created_at']
