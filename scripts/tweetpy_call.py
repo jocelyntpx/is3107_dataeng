@@ -21,12 +21,11 @@ access_secret   = '6xq1Oed2aqLuJ4vPRUWfuHfbhAzZrptlfk4UVExECuEgz'
 #email for disconnected stream
 port = 465  # For SSL
 smtp_server = "smtp.gmail.com"
-sender_email = "nusmerch@gmail.com"  # Enter your address
-receiver_email = "nusmerch@gmail.com"  # Enter receiver address
+sender_email = "test@gmail.com"  # Enter your address
+receiver_email = "test@gmail.com"  # Enter receiver address
 password = input("Type your password and press enter: ")
 message = """\
 Subject: Twitter stream disconnected
-
 Twitter stream has disconnected. Please reconnect."""
 
 tickers_dict={
@@ -81,46 +80,6 @@ class TweetsListener(StreamListener):
                 for ticker, name in tickers_dict.items():
                     if ticker in full_tweet.lower():
                         ticker_list.append(name)
-                # if ("singapore airlines" in (full_tweet.lower())):
-                #     ticker_list.append("Singapore Airlines Limited")
-                # if ("dbs" in (full_tweet.lower())):
-                #     ticker_list.append("DBS Group Holdings Ltd")
-                # if ("comfortdelgro" in (full_tweet.lower())):
-                #     ticker_list.append("ComfortDelGro Corporation Limited")
-                # if ("genting" in (full_tweet.lower())):
-                #     ticker_list.append("Genting Singapore Limited")
-                # if ("capitaland" in (full_tweet.lower())):
-                #     ticker_list.append("CapitaLand Integrated Commercial Trust")
-                # if ("uob" in (full_tweet.lower())):
-                #     ticker_list.append("United Overseas Bank Limited")
-                # if ("mapletree logistics" in (full_tweet.lower())):
-                #     ticker_list.append("Mapletree Logistics Trust")
-                # if ("mapletree commercial" in (full_tweet.lower())):
-                #     ticker_list.append("Mapletree Commercial Trust")
-                # if ("sats" in (full_tweet.lower())):
-                #     ticker_list.append("SATS Ltd")
-                # if ("wilmar" in (full_tweet.lower())):
-                #     ticker_list.append("Wilmar International Limited")
-                # if ("singtel" in (full_tweet.lower())):
-                #     ticker_list.append("Singapore Telecommunications Limited")
-                # if ("city dev" in (full_tweet.lower())):
-                #     ticker_list.append("City Developments Limited")
-                # if ("yangzijiang shipbuilding" in (full_tweet.lower())):
-                #     ticker_list.append("Yangzijiang Shipbuilding (Holdings) Ltd")
-                # if ("thai beverage public company" in (full_tweet.lower())):
-                #     ticker_list.append("Thai Beverage Public Company Limited")
-                # if ("venture corporation" in (full_tweet.lower())):
-                #     ticker_list.append("Venture Corporation Limited")
-                # if ("sembcorp" in (full_tweet.lower())):
-                #     ticker_list.append("Sembcorp Industries Ltd")
-                # if ("ascendas" in (full_tweet.lower())):
-                #     ticker_list.append("Ascendas Real Estate Investment Trust")
-                # if ("frasers" in (full_tweet.lower())):
-                #     ticker_list.append("Frasers Logistics & Commercial Trust")
-                # if ("hongkong land holdings" in (full_tweet.lower())):
-                #     ticker_list.append("Hongkong Land Holdings Limited")
-                # if ("st engineering" in (full_tweet.lower())):
-                #     ticker_list.append("Singapore Technologies Engineering Ltd")
                 
                 # convert UTC to GMT+8
                 dtime = tweet_data['created_at']
@@ -201,7 +160,7 @@ auth.set_access_token(access_token, access_secret)
  
 twitter_stream = Stream(auth, TweetsListener(table=table))
 twitter_stream.filter(
-    track=list(tickers_dict.values()),
+    track=list(tickers_dict.keys()),
     # follow=['1507756052405653511'], #test account
     follow=['282161299','66793353','38400130','56883209','41085467','77165249','95310018','34568673','85774665','37874853','115624161','29213315','2362057826'],
     languages=['en']
