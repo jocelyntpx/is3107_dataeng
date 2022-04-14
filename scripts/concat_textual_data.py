@@ -6,10 +6,6 @@ def combine_textual_db():
 
     combined_text_data = mydb["combined_sentiment_data"]
 
-    if combined_text_data.count_documents({}) != 0:
-        # If database has previous day's data, clear it
-        combined_text_data.delete_many({})
-
     arr_twitter = list(mydb['twitter_sentiment'].find())
     combined_text_data.insert_many(arr_twitter)
 
