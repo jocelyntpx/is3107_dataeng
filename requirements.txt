@@ -2,6 +2,7 @@ tweepy==3.10.0
 praw
 flair
 vanity
+pymongo
 google-cloud-BigQuery
 apache-airflow==2.2.3
 apache-airflow-providers-ftp==2.0.1
