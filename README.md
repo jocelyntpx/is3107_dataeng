@@ -19,9 +19,9 @@ Step 3:
 
 Step 4:
 - Configure your environment to allow parallel processing 
-- Configure a postgresql backend database 
-` https://airflow.apache.org/docs/apache-airflow/stable/howto/set-up-database.html`
+- Configure a postgresql backend database : https://airflow.apache.org/docs/apache-airflow/stable/howto/set-up-database.html
 - Edit your airlfow.cfg file 
+
 ` sql_alchemy_conn = postgresql+psycopg2://airflow_user:airflow_pass@localhost/airflow_db`
 
 Step 4:
@@ -32,10 +32,11 @@ Step 4:
 ## To run twitter, reddit, stock news DAG
 - In a new terminal, in the venv, run "sudo systemctl start mongod"
 - In another terminal, go into the scirpts directory and run "python tweetpy_call.py" to get some data into your local machine. This mocks the starting of the data stream on an external server.
-- On your browser, go into localhost:8080 and run the 'retrieve_daily_textual_data' dag
+- In your airflow homepage, run the 'retrieve_daily_textual_data' dag
 
 ## To run yfinance DAG
 - Create a google cloud connection in airflow with your respecitve key.json and name it "bq_conn"
+- Create a local postgresql database `stock_db`
 - run 'stocks_esg_dag' dag and it will trigger 'stock_esg_google_cloud_dag' dag at the end
 - run 'stocks_info_dag' dag and it will trigger 'stock_info_google_cloud' dag at the end
 - run 'stocks_price_analysis' and it will 'stock_price_google_cloud' dag at the end
