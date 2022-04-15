@@ -1,4 +1,6 @@
-# is3107_dataeng
+# IS3107 - Data Engineering Project
+
+In this project, we want to build a data warehouse which stores information of stocks on SGX, to provide business and personal traders with comprehensive data and insights to make better investment decisions. y creating an End-to-End Extract, Transform, Load (ETL) pipeline to automate data flow from the different sources to our data warehouse, we can facilitate avid and amateur investors to have a better decision-making process and make smarter data-driven investment decisions. Ultimately, it aims to value-add investors who are interested in the Singapore stock market and its surrounding players in a streamlined process. 
 
 ## User Guide to setting up our group's project code
 Step 1:
