@@ -14,8 +14,8 @@ Step 2:
 - Set up postgres connection in airflow
 
 Step 3:
-- Under the airflow folder, import the 3 folders ("DAG", "scripts", "sql") under it
-- Note: The "DAG" folder contains all our DAG files, "scripts" folder stores the functions we are calling in our DAG files and "sql" folder helps to create the yfinance tables.
+- Under the airflow folder, import the 4 folders ("DAG", "scripts", "sql", "keys") under it
+- Note: The "DAG" folder contains all our DAG files, "scripts" folder stores the functions we are calling in our DAG files, "sql" folder helps to create the yfinance tables and "keys" folder contain our google cloud connection key.
 
 Step 4:
 - Configure your environment to allow parallel processing 
