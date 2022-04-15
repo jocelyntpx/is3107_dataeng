@@ -4,7 +4,7 @@ import pandas as pd
 import re
 import json
 import numpy as np
-from datetime import datetime, timedelta
+from datetime import datetime
 
 def get_sentiment(table):
     if table.count_documents({}) == 0:

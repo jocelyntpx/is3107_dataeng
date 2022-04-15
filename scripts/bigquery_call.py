@@ -1,5 +1,3 @@
-
-from dataclasses import dataclass
 from airflow.providers.google.cloud.hooks.bigquery import BigQueryHook
 from airflow.contrib.hooks.gcs_hook import GoogleCloudStorageHook
 import pymongo
@@ -38,7 +36,7 @@ def chunk(l,n):
   for i in range (n):
     si= (d+1)* (i if i<r else r) + d*(0 if i < r else i-r)
     yield l[si:si+(d+1 if i < r else d)]
-    
+
 def Mongo_TO_GCS():
 
     gcs_hook = GoogleCloudStorageHook(GOOGLE_CONN_ID)
