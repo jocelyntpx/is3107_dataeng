@@ -33,6 +33,12 @@ collection = mycol.find(
                 })
 list_cur = list(collection)
 
+def chunk(l,n):
+  d,r = divmod(len(l),n) 
+  for i in range (n):
+    si= (d+1)* (i if i<r else r) + d*(0 if i < r else i-r)
+    yield l[si:si+(d+1 if i < r else d)]
+    
 def Mongo_TO_GCS():
 
     gcs_hook = GoogleCloudStorageHook(GOOGLE_CONN_ID)
@@ -44,8 +50,7 @@ def Mongo_TO_GCS():
         file.write(json_data)
     gcs_hook.upload(BUCKET_NAME, GS_PATH +file_name, file_name)    
 
-
-def Mongo_To_BigQueryTable():
+def Mongo_To_BigQueryTable(PARTS):
     bq_hook = BigQueryHook()
 
     # delete any rows from BQ with yesterday's data
@@ -57,4 +62,7 @@ def Mongo_To_BigQueryTable():
     bq_client = bigquery.Client(project = bq_hook._get_field(projectId), credentials = bq_hook._get_credentials())
     data = bq_client.query(query).result()
     print(data)
-    bq_hook.insert_all(project_id=projectId, dataset_id=datasetId, table_id=tableId, rows = list_cur)
+    lst = list(chunk(data, PARTS))
+    for res in lst:
+        bq_hook = BigQueryHook()
+        bq_hook.insert_all(project_id=projectId, dataset_id=datasetId, table_id=tableId, rows = res)

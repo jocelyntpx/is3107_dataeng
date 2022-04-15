@@ -13,7 +13,6 @@ from airflow.providers.google.cloud.operators.bigquery import (
     BigQueryCreateEmptyTableOperator
 )
 
-
 import sys
 # from sentiment_analysis import get_sentiment
 sys.path.append('/home/airflow/airflow/scripts')
@@ -108,7 +107,8 @@ with DAG(
 
     upload_mongodb_data_bigquery = PythonOperator(
         task_id = 'upload_mongodb_data_to_bq',
-        python_callable = bigquery_call.Mongo_To_BigQueryTable)
+        python_callable = bigquery_call.Mongo_To_BigQueryTable,
+        op_kwargs = {'PARTS': 2})
 
     upload_mongodb_data_gcs = PythonOperator(
         task_id = 'upload_mongodb_data_to_gcs',
