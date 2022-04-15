@@ -24,7 +24,7 @@ Step 4:
 
 ` sql_alchemy_conn = postgresql+psycopg2://airflow_user:airflow_pass@localhost/airflow_db`
 
-Step 4:
+Step 5:
 - In the venv, run "airflow webserver --port 8080"
 - In another terminal, go into the venv again and run "airflow scheduler"
 - Go to localhost:8080 
