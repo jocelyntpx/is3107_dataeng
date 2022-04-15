@@ -1,10 +1,5 @@
 from datetime import datetime, timedelta
-from re import L
-from textwrap import dedent
-
 from airflow import DAG
-
-from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator
 from airflow.operators.dummy_operator import DummyOperator
 
@@ -14,7 +9,6 @@ from airflow.providers.google.cloud.operators.bigquery import (
 )
 
 import sys
-# from sentiment_analysis import get_sentiment
 sys.path.append('/home/airflow/airflow/scripts')
 import stocknews_call
 import reddit_call
