@@ -10,7 +10,7 @@ Step 1:
 
 Step 2:
 - Install mongodb using tutorial 7 slides
-- In the venv, run "pip install -r requirements.txt"
+- In the venv command line, run "pip install -r requirements.txt"
 - Set up postgres connection in airflow
 
 Step 3:
@@ -25,12 +25,12 @@ Step 4:
 ` sql_alchemy_conn = postgresql+psycopg2://airflow_user:airflow_pass@localhost/airflow_db`
 
 Step 5:
-- In the venv, run "airflow webserver --port 8080"
-- In another terminal, go into the venv again and run "airflow scheduler"
+- In the venv command line, run "airflow webserver --port 8080"
+- In another terminal, run "airflow scheduler"
 - Go to localhost:8080 
 
 ## To run twitter, reddit, stock news DAG
-- In a new terminal, in the venv, run "sudo systemctl start mongod"
+- In a new terminal, run "sudo systemctl start mongod"
 - In another terminal, go into the scirpts directory and run "python tweetpy_call.py" to get some data into your local machine. This mocks the starting of the data stream on an external server.
 - In your airflow homepage, run the 'retrieve_daily_textual_data' dag
 
