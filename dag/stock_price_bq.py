@@ -22,14 +22,14 @@ import push_to_bq
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/home/airflow/airflow/keys/bq_key.json'
 
-PROJECT_ID = "united-planet-344907"
+PROJECT_ID = "is3107-stocks-project"
 DATASET_NAME = "stock_price"
 CONN_ID =  "bq_conn"
 POSTGRES_CONN_ID = "postgres_user"
 BUCKET_NAME = "is3107-stock-analysis"
 GS_PATH = "data/stock_price/"
 TABLE_ARRAY_1 = ["stock_price"]
-TABLE_1 = "stock_price_table"
+TABLE_1 = "stock_price"
 LOCATION = "asia-southeast1"
 
 SCHEMA = [
@@ -39,7 +39,7 @@ SCHEMA = [
     {"name": "Low", "type": "FLOAT64", "mode": "NULLABLE"},
     {"name": "Close", "type": "FLOAT64", "mode": "NULLABLE"},
     {"name": "Adj_Close", "type": "FLOAT64", "mode": "NULLABLE"},
-    {"name": "Volume", "type": "INTEGER", "mode": "NULLABLE"},
+    {"name": "Volume", "type": "FLOAT64", "mode": "NULLABLE"},
     {"name": "Log_Return", "type": "FLOAT64", "mode": "NULLABLE"},
     {"name": "Pct_Return", "type": "FLOAT64", "mode": "NULLABLE"},
     {"name": "Stock_Ticker", "type": "STRING", "mode": "NULLABLE"},
@@ -52,7 +52,19 @@ INSERT_DATE = datetime.now().strftime("%Y-%m-%d")
 
 
 SELECT_DATASET_QUERY = """SELECT * FROM {{ DATASET }}.{{ TABLE }}"""
+####################################################
+# 1. DEFINE PYTHON FUNCTIONS
+####################################################
 
+def chunk(l,n):
+  d,r = divmod(len(l),n) 
+  for i in range (n):
+    si= (d+1)* (i if i<r else r) + d*(0 if i < r else i-r)
+    yield l[si:si+(d+1 if i < r else d)]
+
+############################################
+#2. DEFINE AIRFLOW DAG
+############################################
 
 with models.DAG(
     dag_id,
@@ -88,21 +100,18 @@ with models.DAG(
                         'GS_PATH':GS_PATH},
         )
         
-        localToGCS1 = FileToGoogleCloudStorageOperator(
-            task_id='LocalToGCS1',
-            src='/home/airflow/airflow/csv/stock_price/stocks_price.csv',
-            dst=f'data/stock_price/stocks_price_local_{INSERT_DATE}.csv',
-            bucket=BUCKET_NAME,
-            google_cloud_storage_conn_id=CONN_ID,
-        )
-        
         push_to_bigquery= PythonOperator(task_id = 'push_to_bigquery', 
                                  python_callable = push_to_bq.push_to_bigquery1,
                                  provide_context = True,
                                  op_kwargs = {'TABLE_ARRAY_1':TABLE_ARRAY_1,
                                                 'DATASET_NAME':DATASET_NAME,
-                                                'TABLE_1':TABLE_1},
+                                                'TABLE_1':TABLE_1,
+                                                'PARTS': 10},
+        )
+
+        finish_pipeline = DummyOperator(
+        task_id = 'finish_pipeline'
         )
         
+create_dataset >> create_table_1 >> [postgresToGCS1,push_to_bigquery] >> finish_pipeline
 
-create_dataset >> create_table_1 >> [localToGCS1,postgresToGCS1] >> push_to_bigquery

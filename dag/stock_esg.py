@@ -103,7 +103,7 @@ dag = DAG( 'stocks_esg_dag',
             description='Collect Stock ESG Info For Analysis',
             catchup=False, 
             start_date= datetime(2020, 12, 23), 
-            schedule_interval= '0 * * * *'  
+            schedule_interval= '0 0 1 */3 *'  
           )  
 
 ##########################################

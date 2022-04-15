@@ -38,7 +38,7 @@ SCHEMA = [
     {"name": "Low", "type": "FLOAT64", "mode": "NULLABLE"},
     {"name": "Close", "type": "FLOAT64", "mode": "NULLABLE"},
     {"name": "Adj_Close", "type": "FLOAT64", "mode": "NULLABLE"},
-    {"name": "Volume", "type": "FLOAT64", "mode": "NULLABLE"},
+    {"name": "Volume", "type": "INTEGER", "mode": "NULLABLE"},
     {"name": "Log_Return", "type": "FLOAT64", "mode": "NULLABLE"},
     {"name": "Pct_Return", "type": "FLOAT64", "mode": "NULLABLE"},
     {"name": "Stock_Ticker", "type": "STRING", "mode": "NULLABLE"},
@@ -48,6 +48,7 @@ dag_id = "stock_price_google_cloud"
 DATASET = DATASET_NAME 
 INSERT_DATE = datetime.now().strftime("%Y-%m-%d")
 
+PREVIOUS_WEEK = (datetime.today() - timedelta(days=7)).strftime("%Y-%m-%d")
 
 SELECT_DATASET_QUERY = """SELECT * FROM {{ DATASET }}.{{ TABLE }}"""
 
@@ -60,7 +61,7 @@ def fetch_prices_function(**kwargs): # <-- Remember to include "**kwargs" in all
     print('1 Fetching stock prices, remove duplicates and calcualting stock analysis ...')
     stocks_prices = []
     for i in tickers:
-        prices = yf.download(i, period = '1y')
+        prices = yf.download(i, start = PREVIOUS_WEEK)
         prices = prices.reset_index()
         prices['Log Returns'] = np.log(prices['Adj Close']/prices['Adj Close'].shift(1))
         prices['Pct Returns'] = np.exp(prices['Log Returns']) - 1
@@ -100,7 +101,7 @@ dag = DAG( 'stocks_price_analysis',
             description='Collect Stock Prices For Analysis',
             catchup=False, 
             start_date= datetime(2020, 12, 23), 
-            schedule_interval= '0 * * * *'  
+            schedule_interval= '0 0 * * 1-5'  
           )  
 
 ##########################################

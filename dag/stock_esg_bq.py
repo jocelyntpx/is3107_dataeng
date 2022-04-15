@@ -25,7 +25,7 @@ import push_to_bq
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/home/airflow/airflow/keys/bq_key.json'
 
-PROJECT_ID = "united-planet-344907"
+PROJECT_ID = "is3107-stocks-project"
 DATASET_NAME = "stock_esg"
 CONN_ID =  "bq_conn"
 POSTGRES_CONN_ID = "postgres_user"
@@ -33,8 +33,8 @@ BUCKET_NAME = "is3107-stock-analysis"
 GS_PATH = "data/stock_esg/"
 TABLE_ARRAY_1 = ["stock_esg"]
 TABLE_ARRAY_2 = ["stock_esg_agg"]
-TABLE_1 = "stock_esg_table"
-TABLE_2 = "stock_esg_agg_table"
+TABLE_1 = "stock_esg"
+TABLE_2 = "stock_esg_agg"
 LOCATION = "asia-southeast1"
 
 SCHEMA_1 = [
@@ -115,31 +115,12 @@ with models.DAG(
                         'GS_PATH':GS_PATH},
         )
         
-        localToGCS1 = FileToGoogleCloudStorageOperator(
-            task_id='LocalToGCS1',
-            src='/home/airflow/airflow/csv/stock_esg/stocks_esg.csv',
-            dst=f'data/stock_esg/stocks_esg_local_{INSERT_DATE}.csv',
-            bucket=BUCKET_NAME,
-            google_cloud_storage_conn_id=CONN_ID,
-        )
-
-        localToGCS2 = FileToGoogleCloudStorageOperator(
-            task_id='localToGCS2',
-            src='/home/airflow/airflow/csv/stock_esg/aggregated_data.csv',
-            dst=f'data/stock_esg/stocks_esg_aggregated_local_{INSERT_DATE}.csv',
-            bucket=BUCKET_NAME,
-            google_cloud_storage_conn_id=CONN_ID,
-        ) 
-
-        push_staging_dataset = DummyOperator(
-            task_id = 'push_staging_dataset',
-        )  
-        
         push_to_bigquery_1= PythonOperator(task_id = 'push_to_bigquery_1', 
                                  python_callable = push_to_bq.push_to_bigquery1,
                                  op_kwargs = {'TABLE_ARRAY_1':TABLE_ARRAY_1,
                                                 'DATASET_NAME':DATASET_NAME,
-                                                'TABLE_1':TABLE_1},
+                                                'TABLE_1':TABLE_1,
+                                                'PARTS': 10},
                                  provide_context = True,
         )
 
@@ -147,7 +128,8 @@ with models.DAG(
                                  python_callable = push_to_bq.push_to_bigquery2,
                                  op_kwargs = {'TABLE_ARRAY_2':TABLE_ARRAY_2,
                                                 'DATASET_NAME':DATASET_NAME,
-                                                'TABLE_2':TABLE_2},
+                                                'TABLE_2':TABLE_2,
+                                                'PARTS': 10},
                                  provide_context = True,
         )
         
@@ -155,4 +137,4 @@ with models.DAG(
             task_id = 'finish_pipeline',
         )  
 
-create_dataset >> [create_table_1,create_table_2] >>load_staging_dataset >> [localToGCS1,localToGCS2,Postgres_To_GCS1,Postgres_To_GCS2]  >> push_staging_dataset >> [push_to_bigquery_1,push_to_bigquery_2] >> finish_pipeline
+create_dataset >> [create_table_1,create_table_2] >>load_staging_dataset >> [Postgres_To_GCS1,Postgres_To_GCS2,push_to_bigquery_1,push_to_bigquery_2]  >> finish_pipeline

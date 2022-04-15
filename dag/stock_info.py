@@ -30,7 +30,7 @@ POSTGRES_CONN_ID = "postgres_user"
 BUCKET_NAME = "is3107-stock-analysis"
 GS_PATH = "data/stock_info/"
 TABLE_ARRAY = ["stock_info"]
-TABLE_1 = "stock_info_table"
+TABLE_1 = "stock_info"
 LOCATION = "asia-southeast1"
 
 
@@ -69,8 +69,8 @@ def fetch_stock_info_function(**kwargs): # <-- Remember to include "**kwargs" in
         temp = temp.iloc[:,:2]
         temp.columns = ["Attribute", "Recent"]
         dow_stats[ticker] = temp
-    return dow_stats # <-- Input of function to concact prices
     print('Completed \n\n')
+    return dow_stats # <-- Input of function to concact prices
 
 def stocks_info_concat_function(**kwargs): 
     print('2 Pulling stock_info to concatenate sub-lists to create a combined dataset + write to CSV file...')
@@ -80,11 +80,13 @@ def stocks_info_concat_function(**kwargs):
     combined_stats = combined_stats.reset_index().drop(columns=['level_1']).rename(columns={'level_0':'stock_ticker'})
     combined = combined_stats.pivot(index='stock_ticker', columns='Attribute', values='Recent').reset_index().reset_index(drop=True)
     combined.columns.name = None
+    combined.rename(columns={'Enterprise Value': 'Enterprise_Value', 'Enterprise Value/EBITDA':'EV_EBITDA', 'Enterprise Value/Revenue': 'EV_Rev', 'Forward P/E':'Forward_PE','Market Cap (intraday)': 'Market_Cap', 'PEG Ratio (5 yr expected)': 'PEG_Ratio','Price/Book (mrq)': 'PB_Ratio', 'Price/Sales (ttm)': 'PS_Ratio', 'Trailing P/E': 'PE_Ratio'}, inplace=True)
     combined.to_csv('/home/airflow/airflow/csv/stock_info/stocks_info_cleaning.csv', index = False)
-
     print('DF Shape: ', combined.shape)
     print(combined.head(5))
     print('Completed \n\n')
+    return combined
+
 
 def stocks_info_transform_function(**kwargs): 
     print('3 Pulling concat stock_info for transformation')
@@ -99,8 +101,8 @@ def stocks_info_transform_function(**kwargs):
     combined['mc_scale'] = [x[-1] if not pd.isna(x) else np.nan for x in combined['Market_Cap']]
     combined['Enterprise_Value'] = [x[0:-1] if not pd.isna(x) else np.nan for x in combined['Enterprise_Value']]
     combined['Market_Cap'] = [x[0:-1] if not pd.isna(x) else np.nan for x in combined['Market_Cap']]
-    combined['ev_scale'] = combined['ev_scale'].map(scale_dict)
-    combined['mc_scale'] = combined['mc_scale'].map(scale_dict)
+    combined['ev_scale'] = [scale_dict[x] if not pd.isna(x) else np.nan for x in combined['ev_scale']]
+    combined['mc_scale'] = [scale_dict[x] if not pd.isna(x) else np.nan for x in combined['mc_scale']]
     combined.to_csv('/home/airflow/airflow/csv/stock_info/stocks_info_transformed.csv', index = False)
 
     print('DF Shape: ', combined.shape)
@@ -125,7 +127,7 @@ dag = DAG( 'stocks_info_dag',
             description='Collect Stock Info For Analysis',
             catchup=False, 
             start_date= datetime(2020, 12, 23), 
-            schedule_interval= '0 * * * *'  
+            schedule_interval= '0 0 1 */3 *'  
           )  
 
 ##########################################
@@ -173,4 +175,4 @@ trigger_bq = TriggerDagRunOperator(
 #4. DEFINE OPERATORS HIERARCHY
 ##########################################
 
-start_pipeline >> [fetch_stock_info, create_stock_info_table] >> stocks_info_concat >> stocks_info_transform >> populate_stock_info_table >> trigger_bq
+start_pipeline >> [fetch_stock_info,create_stock_info_table] >> stocks_info_concat >> stocks_info_transform >> populate_stock_info_table >> trigger_bq

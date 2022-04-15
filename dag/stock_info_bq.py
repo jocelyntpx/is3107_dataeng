@@ -22,14 +22,14 @@ import push_to_bq
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/home/airflow/airflow/keys/bq_key.json'
 
-PROJECT_ID = "united-planet-344907"
+PROJECT_ID = "is3107-stocks-project"
 DATASET_NAME = "stock_info"
 CONN_ID =  "bq_conn"
 POSTGRES_CONN_ID = "postgres_user"
-BUCKET_NAME = "is3107-stock-analysis"
+BUCKET_NAME = "is3107-project-stock-analysis"
 GS_PATH = "data/stock_info/"
 TABLE_ARRAY_1 = ["stock_info"]
-TABLE_1 = "stock_info_table"
+TABLE_1 = "stock_info"
 LOCATION = "asia-southeast1"
 
 SCHEMA = [
@@ -43,7 +43,7 @@ SCHEMA = [
     {"name": "Price_Book", "type": "FLOAT64", "mode": "NULLABLE"},
     {"name": "Price_Sales", "type": "FLOAT64", "mode": "NULLABLE"},
     {"name": "Trailing_PE", "type": "FLOAT64", "mode": "NULLABLE"},
-    {"name": "EV_Scale", "type": "INTEGER", "mode": "NULLABLE"},
+    {"name": "EV_Scale", "type": "FLOAT64", "mode": "NULLABLE"},
     {"name": "MC_Scale", "type": "INTEGER", "mode": "NULLABLE"},
 ]
 
@@ -93,21 +93,18 @@ with models.DAG(
                         'GS_PATH':GS_PATH},
         )
         
-        localToGCS1 = FileToGoogleCloudStorageOperator(
-            task_id='LocalToGCS1',
-            src='/home/airflow/airflow/csv/stock_info/stocks_info_cleaning.csv',
-            dst=f'data/stock_info/stocks_info_local_{INSERT_DATE}.csv',
-            bucket=BUCKET_NAME,
-            google_cloud_storage_conn_id=CONN_ID,
-        )
-        
         push_to_bigquery= PythonOperator(task_id = 'push_to_bigquery', 
                                  python_callable = push_to_bq.push_to_bigquery1,
                                  provide_context = True,
                                  op_kwargs = {'TABLE_ARRAY_1':TABLE_ARRAY_1,
                                                 'DATASET_NAME':DATASET_NAME,
-                                                'TABLE_1':TABLE_1},
+                                                'TABLE_1':TABLE_1,
+                                                'PARTS': 2},
+        )
+
+        finish_pipeline = DummyOperator(
+        task_id = 'finish_pipeline'
         )
         
 
-create_dataset >> create_table_1 >> [localToGCS1,postgresToGCS1] >> push_to_bigquery
+create_dataset >> create_table_1 >> [postgresToGCS1,push_to_bigquery] >> finish_pipeline
