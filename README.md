@@ -18,8 +18,16 @@ Step 3:
 - Note: The "DAG" folder contains all our DAG files, "scripts" folder stores the functions we are calling in our DAG files and "sql" folder helps to create the yfinance tables.
 
 Step 4:
+- Configure your environment to allow parallel processing 
+- Configure a postgresql backend database 
+` https://airflow.apache.org/docs/apache-airflow/stable/howto/set-up-database.html`
+- Edit your airlfow.cfg file 
+` sql_alchemy_conn = postgresql+psycopg2://airflow_user:airflow_pass@localhost/airflow_db`
+
+Step 4:
 - In the venv, run "airflow webserver --port 8080"
 - In another terminal, go into the venv again and run "airflow scheduler"
+- Go to localhost:8080 
 
 ## To run twitter, reddit, stock news DAG
 - In a new terminal, in the venv, run "sudo systemctl start mongod"
@@ -27,7 +35,7 @@ Step 4:
 - On your browser, go into localhost:8080 and run the 'retrieve_daily_textual_data' dag
 
 ## To run yfinance DAG
-On your browser, go into localhost:8080:
+- Create a google cloud connection in airflow with your respecitve key.json and name it "bq_conn"
 - run 'stocks_esg_dag' dag and it will trigger 'stock_esg_google_cloud_dag' dag at the end
 - run 'stocks_info_dag' dag and it will trigger 'stock_info_google_cloud' dag at the end
 - run 'stocks_price_analysis' and it will 'stock_price_google_cloud' dag at the end
