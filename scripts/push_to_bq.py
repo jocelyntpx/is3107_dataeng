@@ -9,7 +9,8 @@ from airflow.providers.google.cloud.hooks.bigquery import BigQueryHook
 
 CONN_ID =  "bq_conn"
 POSTGRES_CONN_ID = "postgres_user"
-PROJECT_ID = "united-planet-344907"
+# PROJECT_ID = "united-planet-344907"
+PROJECT_ID = "is3107-stocks-project"
 INSERT_DATE = datetime.now().strftime("%Y-%m-%d")
 PREVIOUS_DAY = (datetime.today() - timedelta(days=1)).strftime("%Y-%m-%d")
 

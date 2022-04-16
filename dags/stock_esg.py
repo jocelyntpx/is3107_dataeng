@@ -20,6 +20,7 @@ tickers = ['C6L.SI','D05.SI','C52.SI','G13.SI','C38U.SI',
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/home/airflow/airflow/keys/bq_key.json'
 
+
 ####################################################
 # 1. DEFINE PYTHON FUNCTIONS
 ####################################################

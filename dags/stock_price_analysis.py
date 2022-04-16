@@ -21,11 +21,11 @@ tickers = ['C6L.SI','D05.SI','C52.SI','G13.SI','C38U.SI',
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/home/airflow/airflow/keys/bq_key.json'
 
-PROJECT_ID = "united-planet-344907"
+PROJECT_ID = "is3107-stocks-project"
 DATASET_NAME = "stock_price"
 CONN_ID =  "bq_conn"
 POSTGRES_CONN_ID = "postgres_user"
-BUCKET_NAME = "is3107-stock-analysis"
+BUCKET_NAME = "is3107-stocks-analysis"
 GS_PATH = "data/stock_price/"
 TABLE_ARRAY = ["stock_price"]
 TABLE_1 = "stock_price_table"
