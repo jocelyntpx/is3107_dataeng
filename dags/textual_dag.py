@@ -28,7 +28,8 @@ default_args = {
 }
 
 
-PROJECT_ID = "united-planet-344907"
+# PROJECT_ID = "united-planet-344907"
+PROJECT_ID = "is3107-stocks-project"
 DATASET_NAME = "sentiment"
 CONN_ID =  "bq_conn"
 POSTGRES_CONN_ID = "postgres_user"

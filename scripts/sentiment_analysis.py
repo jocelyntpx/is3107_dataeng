@@ -64,7 +64,7 @@ def get_sentiment(table):
 
 def stocknews_sentiment():
     myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-    mydb = myclient["is3107db"]
+    mydb = myclient["textual_db"]
     mycol = mydb["stocknews"]
     data = get_sentiment(mycol)
     mycol.delete_many({})
@@ -72,7 +72,7 @@ def stocknews_sentiment():
 
 def twitter_sentiment():
     myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-    mydb = myclient["is3107db"]
+    mydb = myclient["textual_db"]
     mycol = mydb["twitter"]
 
     df = pd.json_normalize(list(mycol.find()))
@@ -99,7 +99,7 @@ def twitter_sentiment():
 
 def reddit_sentiment():
     myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-    mydb = myclient["is3107db"]
+    mydb = myclient["textual_db"]
     mycol = mydb["reddit"]
     data = get_sentiment(mycol)
     mycol.delete_many({})
