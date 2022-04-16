@@ -8,13 +8,13 @@ from google.cloud import bigquery
 import os
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/home/airflow/airflow/keys/bq_key.json'
 
-projectId ='united-planet-344907'
+projectId = "is3107-stocks-project"
 datasetId = 'sentiment'
 tableId ='combined_sentiment'
 
 GOOGLE_CONN_ID = "google_cloud_default"    
 INSERT_DATE = datetime.now().strftime("%Y-%m-%d")
-BUCKET_NAME ='is3107-stock-analysis'
+BUCKET_NAME ='is3107-stocks-analysis'
 GS_PATH = 'data/textual_data/'
 
 
@@ -44,6 +44,7 @@ def Mongo_TO_GCS():
     json_data = dumps(list_cur, indent = 2) 
     # Writing data to file textual_data_{date}.json
     file_name = 'textual_data_'+INSERT_DATE+'.json' 
+    print(json_data)
     with open(file_name, 'w') as file:
         file.write(json_data)
     gcs_hook.upload(BUCKET_NAME, GS_PATH +file_name, file_name)    
@@ -53,14 +54,14 @@ def Mongo_To_BigQueryTable(PARTS):
 
     # delete any rows from BQ with yesterday's data
     query = """
-        DELETE FROM `united-planet-344907.sentiment.combined_sentiment` AS t
+        DELETE FROM `is3107-stocks-project.sentiment.combined_sentiment` AS t
         WHERE t.datetime_created BETWEEN DATE_SUB(CURRENT_DATE('''GMT'''), INTERVAL 1 DAY) AND current_date('''GMT''')
         AND t.datetime_created < TIMESTAMP_SUB(t.datetime_created, INTERVAL 30 MINUTE);
     """
     bq_client = bigquery.Client(project = bq_hook._get_field(projectId), credentials = bq_hook._get_credentials())
     data = bq_client.query(query).result()
-    print(data)
-    lst = list(chunk(data, PARTS))
-    for res in lst:
-        bq_hook = BigQueryHook()
-        bq_hook.insert_all(project_id=projectId, dataset_id=datasetId, table_id=tableId, rows = res)
+    lst = list(chunk(list_cur, PARTS))
+    if len(list_cur) > 0: 
+        for res in lst:
+            bq_hook = BigQueryHook()
+            bq_hook.insert_all(project_id=projectId, dataset_id=datasetId, table_id=tableId, rows = res)
