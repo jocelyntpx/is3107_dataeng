@@ -13,6 +13,10 @@ Step 2:
 - In the venv command line, run "pip install -r requirements.txt"
 - Set up postgres connection in airflow
 
+step 3:
+- Connect to postgresql `sudo -u postgres psql`
+- Create a stock_db table `CREATE DATABASE stock_db;`
+
 Step 3:
 - Under the airflow folder, import the 4 folders ("DAG", "scripts", "sql", "keys") under it
 - Note: The "DAG" folder contains all our DAG files, "scripts" folder stores the functions we are calling in our DAG files, "sql" folder helps to create the yfinance tables and "keys" folder contain our google cloud connection key.
@@ -20,23 +24,29 @@ Step 3:
 Step 4:
 - Configure your environment to allow parallel processing 
 - Configure a postgresql backend database : https://airflow.apache.org/docs/apache-airflow/stable/howto/set-up-database.html
+```console 
+CREATE DATABASE airflow_db;
+CREATE USER airflow_user WITH PASSWORD 'airflow_pass';
+GRANT ALL PRIVILEGES ON DATABASE airflow_db TO airflow_user;
+ALTER USER airflow_user WITH SUPERUSER;
+```
 - Edit your airlfow.cfg file 
-
-` sql_alchemy_conn = postgresql+psycopg2://airflow_user:airflow_pass@localhost/airflow_db`
-
+```console 
+executor = LocalExecutor
+sql_alchemy_conn = postgresql+psycopg2://airflow_user:airflow_pass@localhost/airflow_db
+```
 Step 5:
-- In the venv command line, run "airflow webserver --port 8080"
-- In another terminal, run "airflow scheduler"
+- In the venv command line, run `airflow webserver --port 8080`
+- In another terminal, run `airflow scheduler`
 - Go to localhost:8080 
 
 ## To run twitter, reddit, stock news DAG
-- In a new terminal, run "sudo systemctl start mongod"
+- In a new terminal, run `sudo systemctl start mongod`
 - In another terminal, go into the scirpts directory and run "python tweetpy_call.py" to get some data into your local machine. This mocks the starting of the data stream on an external server.
 - In your airflow homepage, run the 'retrieve_daily_textual_data' dag
 
 ## To run yfinance DAG
 - Create a google cloud connection in airflow with your respecitve key.json and name it "bq_conn"
-- Create a local postgresql database `stock_db`
 - run 'stocks_esg_dag' dag and it will trigger 'stock_esg_google_cloud_dag' dag at the end
 - run 'stocks_info_dag' dag and it will trigger 'stock_info_google_cloud' dag at the end
 - run 'stocks_price_analysis' and it will 'stock_price_google_cloud' dag at the end
