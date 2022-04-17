@@ -9,7 +9,7 @@ from airflow.contrib.hooks.gcs_hook import GoogleCloudStorageHook
 
 CONN_ID =  "bq_conn"
 POSTGRES_CONN_ID = "postgres_user"
-BUCKET_NAME = "is3107-stock-analysis"
+BUCKET_NAME = "is3107-stocks-analysis"
 INSERT_DATE = datetime.now().strftime("%Y-%m-%d")
 
 def Postgres_To_GCS1(TABLE_ARRAY_1,GS_PATH):

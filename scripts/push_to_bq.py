@@ -9,7 +9,6 @@ from airflow.providers.google.cloud.hooks.bigquery import BigQueryHook
 
 CONN_ID =  "bq_conn"
 POSTGRES_CONN_ID = "postgres_user"
-# PROJECT_ID = "united-planet-344907"
 PROJECT_ID = "is3107-stocks-project"
 INSERT_DATE = datetime.now().strftime("%Y-%m-%d")
 PREVIOUS_DAY = (datetime.today() - timedelta(days=1)).strftime("%Y-%m-%d")
@@ -28,17 +27,14 @@ def push_to_bigquery1(TABLE_ARRAY_1, DATASET_NAME, TABLE_1, PARTS):
         cursor = conn.cursor()
         print(INSERT_DATE,PREVIOUS_DAY,table)
         if DATASET_NAME == "stock_price":
-            query = f"""
-                SELECT * FROM {table}
-                WHERE {table}.Date BETWEEN '{PREVIOUS_DAY}' AND '{INSERT_DATE}';
-            """
+            cursor.execute("select * from " + table)
+            # query = f"""
+            #     SELECT * FROM {table}
+            #     WHERE {table}.Date BETWEEN '{PREVIOUS_DAY}' AND '{INSERT_DATE}';
+            # """
+            # cursor.execute(query)
         else :
-            query =  f"""
-                SELECT * FROM {table}
-            """
-        cursor.execute(query)
-        # cursor.execute("select * from " + table + " where " + table +".Date between " INSERT_DATE + " and " + PREVIOUS_DAY)
-        # cursor.execute("select * from " + table)
+            cursor.execute("select * from " + table)
         result = cursor.fetchall()
     print(result)
     lst = list(chunk(result, PARTS))
