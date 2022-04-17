@@ -120,7 +120,7 @@ with models.DAG(
                                  op_kwargs = {'TABLE_ARRAY_1':TABLE_ARRAY_1,
                                                 'DATASET_NAME':DATASET_NAME,
                                                 'TABLE_1':TABLE_1,
-                                                'PARTS': 10},
+                                                'PARTS': 2},
                                  provide_context = True,
         )
 
@@ -129,7 +129,7 @@ with models.DAG(
                                  op_kwargs = {'TABLE_ARRAY_2':TABLE_ARRAY_2,
                                                 'DATASET_NAME':DATASET_NAME,
                                                 'TABLE_2':TABLE_2,
-                                                'PARTS': 10},
+                                                'PARTS': 2},
                                  provide_context = True,
         )
         

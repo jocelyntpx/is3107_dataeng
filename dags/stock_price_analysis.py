@@ -46,6 +46,9 @@ SCHEMA = [
 
 dag_id = "stock_price_google_cloud" 
 DATASET = DATASET_NAME 
+# LAST_MON= (datetime.today() - timedelta(days=3)).strftime("%Y-%m-%d")
+# LAST_MON= (datetime.today() - timedelta(days=)).strftime("%Y-%m-%d")
+
 INSERT_DATE = datetime.now().strftime("%Y-%m-%d")
 
 PREVIOUS_WEEK = (datetime.today() - timedelta(days=7)).strftime("%Y-%m-%d")
